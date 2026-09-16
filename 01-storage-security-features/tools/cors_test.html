@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Azure Blob CORS Test</title></head>
+<body>
+<h1>Azure Blob CORS Test</h1>
+<p>Paste a short-lived READ-only SAS URL for banner.txt.</p>
+<input id="u" style="width:90%">
+<button onclick="go()">GET blob</button>
+<pre id="o"></pre>
+<script>
+async function go() {
+  const o=document.getElementById('o');
+  try {
+    const r=await fetch(document.getElementById('u').value.trim());
+    o.textContent='HTTP '+r.status+'\n\n'+await r.text();
+  } catch(e) { o.textContent='Blocked/failed: '+e; }
+}
+</script>
+</body>
+</html>

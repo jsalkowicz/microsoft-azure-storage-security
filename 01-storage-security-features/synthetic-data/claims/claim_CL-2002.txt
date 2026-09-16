@@ -1,0 +1,8 @@
+NORTHSTAR INSURANCE GROUP
+SYNTHETIC TRAINING DATA — NOT REAL CUSTOMER DATA
+
+Claim Number: CL-2002
+Customer: Morgan Lane
+Synthetic Driver License: NJ-TEST-48211
+Claim Amount: $6,980
+Status: Pending

@@ -1,0 +1,4 @@
+Application,Current Authentication,Current Key,Required Access
+ClaimsPortal,Shared Key,key1,Read claims
+NightlyExporter,Shared Key,key2,List/read claims
+FutureTarget,Managed Identity,N/A,Storage Blob Data Reader on claims

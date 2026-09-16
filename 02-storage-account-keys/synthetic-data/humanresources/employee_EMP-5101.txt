@@ -1,0 +1,7 @@
+NORTHSTAR INSURANCE GROUP
+SYNTHETIC TRAINING DATA — NOT REAL EMPLOYEE DATA
+
+Employee ID: EMP-5101
+Employee: Riley Carter
+Synthetic SSN: 000-98-5101
+Department: Claims

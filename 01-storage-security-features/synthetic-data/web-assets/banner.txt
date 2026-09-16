@@ -1,0 +1,1 @@
+Synthetic website asset for the Azure Storage CORS lab.
