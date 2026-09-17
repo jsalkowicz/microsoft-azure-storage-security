@@ -1,0 +1,9 @@
+NORTHSTAR INSURANCE GROUP
+SYNTHETIC TRAINING DATA — NOT REAL CUSTOMER DATA
+
+Claim Number: CL-7001
+Customer: Avery Morgan
+Synthetic SSN: 000-12-7001
+Claim Type: Auto
+Claim Amount: $8,450
+Status: Open
