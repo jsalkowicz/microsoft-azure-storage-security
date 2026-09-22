@@ -1,197 +1,78 @@
-# Lab 2 — Storage Account Keys (Portal Ready)
+# Lab 02 — What I ran
 
-## Objective
+This is the order I followed in the training tenant. I used one admin session for key management and a separate **Claims Reader** session for the RBAC test. All blob content is synthetic. **Do not use the rotation section on a real storage account without inventorying dependencies and planning a cutover.**
 
-Practice the REAL Azure lifecycle:
+## 1. Baseline: compare account keys with RBAC
 
-**identify dependency -> use secondary key -> rotate primary key -> prove old key fails -> migrate away from Shared Key**
-
-Use a disposable training Storage account only.
-
-## Step 1 — Create/reuse a training Storage account
-
-Create:
-
-- private container `claims`
-- private container `humanresources`
-
-Upload the included synthetic files.
-
-## Step 2 — Locate the two real account keys
-
-Azure Portal:
-
-**Storage account -> Security + networking -> Access keys**
-
-Azure shows:
-
-- key1
-- key2
-
-### SECURITY RULE
-
-Do NOT paste either real key into ChatGPT, screenshots, source control, email, or permanent notes.
-
-## Step 3 — Use Key 1 from Cloud Shell without writing it into a file
-
-In Cloud Shell, set the key as a temporary shell variable.
-
-Replace the placeholder yourself:
+Under **Storage account → Settings → Configuration**, I confirmed **Allow storage account key access = Enabled**. Azure showed two access keys. In the admin Cloud Shell, I used temporary variables rather than displaying or pasting credential values:
 
 ```bash
-export STORAGE_ACCOUNT="<your-account-name>"
-export KEY1="<paste-key1-here>"
+RG="rg-northstar-storage-labs"
+STORAGE_ACCOUNT="northstarlab48217"
+KEY1=$(az storage account keys list --resource-group "$RG" --account-name "$STORAGE_ACCOUNT" --query '[0].value' -o tsv)
 ```
-
-List Claims using Shared Key:
 
 ```bash
-az storage blob list \
-  --account-name "$STORAGE_ACCOUNT" \
-  --container-name claims \
-  --account-key "$KEY1" \
-  --output table
+az storage blob list --account-name "$STORAGE_ACCOUNT" --container-name claims --account-key "$KEY1" -o table
+az storage blob list --account-name "$STORAGE_ACCOUNT" --container-name humanresources --account-key "$KEY1" -o table
 ```
 
-Then list HR:
+Both listings succeeded. That gave me a direct comparison with the Claims Reader's container-scoped access from Lab 01.
+
+## 2. Check the alternate key, then rotate Key 1
+
+The storage account was only being used for these labs, so there were no actual application dependencies to migrate. I still tested Key 2 **before** regenerating Key 1, following the dependency-check principle in the [runbook](docs/key-rotation-runbook.md):
 
 ```bash
-az storage blob list \
-  --account-name "$STORAGE_ACCOUNT" \
-  --container-name humanresources \
-  --account-key "$KEY1" \
-  --output table
+KEY2=$(az storage account keys list --resource-group "$RG" --account-name "$STORAGE_ACCOUNT" --query '[1].value' -o tsv)
+az storage blob list --account-name "$STORAGE_ACCOUNT" --container-name claims --account-key "$KEY2" -o table
 ```
 
-Notice the important lesson:
-
-> The same account key is not naturally limited to only the Claims container.
-
-## Step 4 — Switch the test client to Key 2
-
-In the Portal copy Key 2 into a temporary Cloud Shell variable:
+With Key 2 confirmed, I retained the old Key 1 only in the shell session, then renewed Key 1:
 
 ```bash
-export KEY2="<paste-key2-here>"
+OLD_KEY1="$KEY1"
+az storage account keys renew --resource-group "$RG" --account-name "$STORAGE_ACCOUNT" --key key1 --output none
 ```
 
-Test Claims:
+The next request using `OLD_KEY1` failed authentication. I fetched the refreshed Key 1 and repeated the listing, which succeeded:
 
 ```bash
-az storage blob list \
-  --account-name "$STORAGE_ACCOUNT" \
-  --container-name claims \
-  --account-key "$KEY2" \
-  --output table
+az storage blob list --account-name "$STORAGE_ACCOUNT" --container-name claims --account-key "$OLD_KEY1" -o table
+NEW_KEY1=$(az storage account keys list --resource-group "$RG" --account-name "$STORAGE_ACCOUNT" --query '[0].value' -o tsv)
+az storage blob list --account-name "$STORAGE_ACCOUNT" --container-name claims --account-key "$NEW_KEY1" -o table
 ```
 
-If it succeeds, your test client can operate using Key 2.
+## 3. Check the audit trail
 
-## Step 5 — Rotate Key 1
+I opened the lab's Log Analytics workspace and ran the [query in `tools/`](tools/log-analytics-queries.kql). The results contained successful `ListBlobs` operations with `AuthenticationType = AccountKey`, including operations against both containers.
 
-Azure Portal:
+## 4. Turn off Shared Key, then compare identities
 
-**Security + networking -> Access keys**
-
-Regenerate **key1**.
-
-Do NOT regenerate both keys together.
-
-## Step 6 — Prove the old Key 1 no longer works
-
-Your Cloud Shell variable still contains the OLD Key 1 value.
-
-Run:
+In **Configuration**, I disabled **Allow storage account key access** and saved it. The current account key then failed:
 
 ```bash
-az storage blob list \
-  --account-name "$STORAGE_ACCOUNT" \
-  --container-name claims \
-  --account-key "$KEY1" \
-  --output table
+az storage blob list --account-name "$STORAGE_ACCOUNT" --container-name claims --account-key "$NEW_KEY1" -o table
+# ErrorCode: KeyBasedAuthenticationNotPermitted
 ```
 
-Expected:
+Cloud Shell had restarted during this phase, so I restored `STORAGE_ACCOUNT` and re-fetched the current key before the final test. I did **not** count the first attempt with empty variables as proof of the control.
 
-**authentication failure**
-
-Now use Key 2 again.
-
-Expected:
-
-**success**
-
-This proves why Azure provides two keys.
-
-## Step 7 — Refresh your Key 1 value
-
-Copy the NEW Key 1 value into:
+Next, I tried `--auth-mode login` using the admin shell. That identity did not have the Blob data role needed for a listing. I switched to the already-scoped Claims Reader identity for the actual Entra/RBAC comparison:
 
 ```bash
-export NEW_KEY1="<new-key1-value>"
+az storage blob list --account-name northstarlab48217 --container-name claims --auth-mode login -o table
+az storage blob list --account-name northstarlab48217 --container-name humanresources --auth-mode login -o table
 ```
 
-Test it.
+Claims listed successfully; Human Resources returned a permissions error. Shared Key remained disabled during those requests.
 
-## Step 8 — Understand production rotation
+## 5. Leave the lab ready for the next exercise
 
-Real production sequence:
-
-```text
-Find every client using Key 1
--> move those clients to Key 2
--> regenerate Key 1
--> test
--> move clients to new Key 1 if desired
--> regenerate Key 2
--> test again
-```
-
-Rotation is both:
-
-- a security action
-- a production change
-
-## Step 9 — Compare with Entra ID
-
-Now run an Entra-authenticated command if your identity has an appropriate Blob data role:
+I restored **Allow storage account key access = Enabled** in Configuration for the planned SAS lab, then cleared the temporary key variables in the admin Cloud Shell:
 
 ```bash
-az storage blob list \
-  --account-name "$STORAGE_ACCOUNT" \
-  --container-name claims \
-  --auth-mode login \
-  --output table
+unset KEY1 KEY2 OLD_KEY1 NEW_KEY1
 ```
 
-This does NOT send an account key.
-
-## Step 10 — Optional: Disable Shared Key
-
-ONLY after you are finished with the key tests.
-
-Portal:
-
-**Settings -> Configuration -> Allow storage account key access -> Disabled**
-
-Save.
-
-Now try Key 2 again.
-
-Expected:
-
-**Shared Key request rejected**
-
-If you need the account for the SAS lab, re-enable Shared Key only if the specific SAS exercise requires a key-signed SAS. User delegation SAS can use Entra credentials.
-
-## Final memory map
-
-```text
-FIND -> SWITCH -> ROTATE -> TEST -> MIGRATE -> DISABLE
-```
-
-Best long-term direction for supported Azure workloads:
-
-```text
-Entra ID + managed identity + scoped RBAC
-```
+The actual credential values never appear in the command examples or the published evidence. Avoid running CLI commands with `--debug` when handling credentials; command-line arguments can also be exposed to local process inspection during execution. For a production system, use a managed identity and Azure RBAC where the application supports them.

@@ -2,6 +2,10 @@ NORTHSTAR INSURANCE GROUP
 SYNTHETIC TRAINING DATA — NOT REAL EMPLOYEE DATA
 
 Employee ID: EMP-5101
-Employee: Riley Carter
-Synthetic SSN: 000-98-5101
-Department: Claims
+Employee: Casey Rivera
+Department: Human Resources
+Synthetic SSN: 000-51-5101
+Employment Status: Active
+
+Purpose:
+Synthetic HR Blob data used only for Azure Storage account-key security training.
