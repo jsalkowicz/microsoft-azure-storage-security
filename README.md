@@ -1,6 +1,6 @@
 # Microsoft Azure Storage Security Labs
 
-**Status:** In Progress — Labs 00–01 complete; Labs 02–03 still in progress
+**Status:** In Progress – Labs 00–02 complete; Lab 03 still in progress
 **Platform:** Microsoft Azure  
 **Focus:** Azure Storage security, Microsoft Entra ID, Azure RBAC, Shared Key, and Shared Access Signatures
 
@@ -66,7 +66,7 @@ Additional authorization methods examined:
 |---|---|---|
 | 00 | Account, Permissions & RBAC Setup | **Complete** — container-scoped RBAC validated |
 | 01 | Storage Security Features | **Complete** — encryption, HTTPS, CORS, RBAC, logging validated |
-| 02 | Storage Account Keys | Shared Key risk, rotation, migration |
+| 02 | Storage Account Keys | **Complete** – Shared Key access, key rotation, audit logging, and Entra/RBAC validation |
 | 03 | Shared Access Signatures | Temporary delegated access and least privilege |
 
 ## Validation Model
