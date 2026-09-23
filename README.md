@@ -1,7 +1,8 @@
 # Microsoft Azure Storage Security Labs
 
 **Status:** Complete – Labs 00–03 completed and documented
-**Platform:** Microsoft Azure  
+
+**Platform:** Microsoft Azure
 **Focus:** Azure Storage security, Microsoft Entra ID, Azure RBAC, Shared Key, and Shared Access Signatures
 
 ## Project Overview
@@ -41,7 +42,7 @@ Azure Storage Account
        |
        +---- humanresources container
        |
-       +---- web-assets container
+       +---- claims-upload container
 
 Additional authorization methods examined:
 - Shared Key
