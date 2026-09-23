@@ -1,6 +1,7 @@
-NORTHSTAR INSURANCE GROUP
-SYNTHETIC TRAINING DATA — NOT A REAL PHOTO
-
-Claim Number: CL-6101
-Artifact Type: Vehicle Damage Photo Placeholder
-Description: Front bumper damage.
+NORTHSTAR INSURANCE — FICTIONAL TRAINING RECORD
+Document: Customer photo-submission placeholder (TEXT FILE; NOT A REAL PHOTO)
+Claim reference: CL-6101
+Customer: Avery Chen (fictional)
+Submission purpose: Simulate a customer's one-time upload of damage evidence.
+Image description: Small scratch on passenger-side door; actual image intentionally omitted.
+Data classification: SYNTHETIC / TRAINING ONLY

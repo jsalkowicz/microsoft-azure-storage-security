@@ -1,196 +1,35 @@
-# Lab 3 — Shared Access Signatures (SAS) (Portal + Cloud Shell Ready)
+# Lab 03 — Execution guide and test record
 
-## Objective
+This records the actual September 23, 2026 run. Use the [results](results.md) and [evidence index](evidence/screenshots/README.md) to check each observed result. Do not interpret an expected outcome as completed evidence.
 
-Practice:
+## 1. Prepare data
 
-- short-lived delegated access
-- permissions
-- resource scope
-- expiration
-- user delegation SAS
-- why Account SAS is broader
+In the training storage account, I reused the private `claims` container. I uploaded the two invented local files from `synthetic-data/claims-read/` directly into **`claims`**. I did **not** create a separate Azure `claims-read` container. I created a different private container named `claims-upload` for customer-submission tests.
 
-Core question:
+## 2. Read-only blob SAS
 
-**WHAT can they do? WHERE can they do it? HOW LONG can they do it?**
+I opened `claims/claim_summary_CL-6201.txt` in the portal, selected Generate SAS and used account key signing (Key 1), Read permission and HTTPS only. I set an approximately one-hour lifetime. I copied the generated SAS URL locally, opened it in a separate Incognito window and observed the synthetic summary displayed. I did not record the URL or token.
 
-## Step 1 — Create containers
+Changing **only the filename** in the URL to `claim_estimate_CL-6202.txt` while keeping the same SAS query returned `AuthenticationFailed` / signature mismatch. Refreshing the original approved link *after* its signed expiration returned a time-frame failure. These are distinct negative tests: wrong signed resource versus expired credential.
 
-In the training Storage account create private containers:
+## 3. Container-level customer-upload SAS
 
-- `claims-upload`
-- `claims-read`
+I created private `claims-upload` and left it empty before the first test. From the container's `... → Generate SAS` menu, I selected **Create + Write only**, with HTTPS only and a short expiry. This was a **container-level** SAS, not a one-blob SAS. Read, List and Delete were not selected.
 
-Upload the included synthetic files.
+I copied only the token into a non-echoed shell variable and uploaded the local synthetic `claim_photo_CL-6101.txt` using `az storage blob upload` with `--sas-token "$UPLOAD_SAS"`. The upload succeeded. Attempts with the same SAS to download the blob, list the container or delete the blob were denied. A portal check confirmed the first upload remained in place.
 
-## Step 2 — Create a short-lived read SAS in the Portal
+## 4. Audit the operations
 
-For `claims-read/claim_summary_CL-6201.txt`, use the Blob's SAS generation experience available in the Azure Portal.
+The existing Blob diagnostic setting originally had **Storage Read** enabled but not **Storage Write**. SAS-related read/list requests and authorization-denied events appeared in Log Analytics, but a `PutBlob` query initially returned zero results.
 
-Choose:
+I enabled Storage Write to the existing Log Analytics workspace, transferred the second synthetic file (`customer_submission_note_CL-6101.txt`) to Cloud Shell and generated a **fresh** Create + Write SAS for `claims-upload`. The second upload succeeded. Re-running the write query showed `PutBlob`, `SAS`, `201 Success`. Enabling diagnostics does not backfill earlier operations.
 
-- Read only
-- HTTPS only if available
-- very short expiration, such as 15–30 minutes
+## 5. Cleanup and final check
 
-Copy the generated Blob SAS URL.
+I ran `unset UPLOAD_SAS` in the admin shell after the second upload. The final portal screenshot shows both synthetic files in the private upload container. The short-lived SAS credentials were not included in the repository.
 
-### SECURITY RULE
+## Security limits demonstrated
 
-Treat the real SAS URL like a password.
+A **blob-level** read SAS signed for one file could not be moved to another blob by editing the URL path. In contrast, the **container-level** Create + Write SAS applied to the whole upload container and did not guarantee create-only or single-filename access. A production upload workflow would normally generate a signed URL for a specific target path or use a backend to enforce naming, overwrite and authorization rules.
 
-Do NOT paste it into ChatGPT or save it in source control.
-
-Open the URL in a private/incognito browser.
-
-Expected:
-
-**the blob is readable while the SAS is valid**
-
-Try again after expiration.
-
-Expected:
-
-**access fails**
-
-## Step 3 — Generate a user delegation SAS in Azure Cloud Shell
-
-Microsoft recommends user delegation SAS when possible because it is authorized with Entra credentials rather than an account key.
-
-Your signed-in identity needs the required Blob data permissions and permission to request a user delegation key.
-
-In Cloud Shell:
-
-```bash
-export STORAGE_ACCOUNT="<your-account-name>"
-EXPIRY=$(date -u -d "30 minutes" '+%Y-%m-%dT%H:%MZ')
-```
-
-Generate a READ-only user delegation SAS for the claim summary:
-
-```bash
-az storage blob generate-sas \
-  --account-name "$STORAGE_ACCOUNT" \
-  --container-name claims-read \
-  --name claim_summary_CL-6201.txt \
-  --permissions r \
-  --expiry "$EXPIRY" \
-  --auth-mode login \
-  --as-user \
-  --full-uri
-```
-
-The command returns a SAS URI.
-
-Do not paste that URI into ChatGPT.
-
-Open it in a private browser and test it.
-
-## Step 4 — Test the minimum-permission principle
-
-Your repair partner only needs to READ one approved claim summary.
-
-Correct design:
-
-```text
-Permission: Read
-Resource: One blob
-Time: Short
-```
-
-Do NOT give:
-
-```text
-Write
-Delete
-List
-Long expiration
-```
-
-unless the business requirement actually needs them.
-
-## Step 5 — Customer upload scenario
-
-Business need:
-
-> A customer needs to upload a claim photo.
-
-Design the SAS so the customer has only the upload permissions needed for the upload location and only for a short period.
-
-The important exercise is not memorizing permission letters.
-
-It is choosing:
-
-```text
-minimum permission
-minimum scope
-minimum time
-```
-
-## Step 6 — Understand the three SAS types
-
-### User delegation SAS
-
-- backed by Microsoft Entra credentials
-- preferred when supported
-
-### Service SAS
-
-- scoped to a specific Azure Storage service/resource
-- signed with an account key
-
-### Account SAS
-
-- can grant broader storage capabilities
-- signed with an account key
-- larger possible blast radius
-
-## Step 7 — Compare SAS with managed identity
-
-Use **managed identity** when an Azure workload needs ongoing identity-based access.
-
-Example:
-
-```text
-Claims App -> Blob Storage
-```
-
-Use **SAS** when a client needs temporary delegated access.
-
-Example:
-
-```text
-Customer -> upload accident photo for 20 minutes
-```
-
-## Step 8 — Incident exercise
-
-Assume a SAS URL is accidentally posted publicly.
-
-Determine:
-
-1. What permission does it grant?
-2. What resource does it reach?
-3. When does it expire?
-4. Was it used?
-5. How can you invalidate/revoke the access?
-6. What logs show requests?
-
-Do not assume exposure proves data access. Investigate the evidence.
-
-## Final memory map
-
-```text
-SAS = TEMPORARY PERMISSION SLIP
-
-WHAT?
-WHERE?
-HOW LONG?
-```
-
-Preferred when possible:
-
-```text
-User delegation SAS -> Entra-backed
-```
+A user delegation SAS was discussed but **not tested**. Repeated successful `ListBlobs` activity from the Azure portal should not be attributed to the restricted upload token without more evidence.

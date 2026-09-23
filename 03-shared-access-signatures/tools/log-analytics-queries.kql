@@ -1,0 +1,16 @@
+// Storage Blob service, workspace: law-northstar-storage-labs
+// Project NO Uri or request headers: full URIs may contain signed SAS query strings.
+// Read/list and permission-denied events
+StorageBlobLogs
+| where TimeGenerated > ago(24h)
+| where AuthenticationType == "SAS"
+| project TimeGenerated, OperationName, AuthenticationType, StatusCode, StatusText
+| order by TimeGenerated desc
+
+// Run separately: upload/write events after enabling Storage Write diagnostic category
+StorageBlobLogs
+| where TimeGenerated > ago(24h)
+| where AuthenticationType == "SAS"
+| where OperationName in ("PutBlob", "PutBlock", "PutBlockList")
+| project TimeGenerated, OperationName, AuthenticationType, StatusCode, StatusText
+| order by TimeGenerated desc
