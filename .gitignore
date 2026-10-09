@@ -1,0 +1,27 @@
+# Secrets / environment
+.env
+.env.*
+*.pem
+*.pfx
+*.key
+*.secret
+secrets/
+credentials/
+
+# Azure auth / local state
+.azure/
+*.token
+
+# Temporary output
+*.log
+tmp/
+temp/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Raw screenshots should be sanitized before publication
+**/evidence/raw/

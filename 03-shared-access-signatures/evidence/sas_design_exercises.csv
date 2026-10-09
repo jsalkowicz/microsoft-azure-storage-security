@@ -1,0 +1,4 @@
+Scenario,Needed Permission,Scope,Lifetime,Preferred Design
+Customer uploads claim photo,Create/Write,Upload location,15-30 minutes,User delegation SAS when supported
+Repair partner downloads one estimate,Read,One blob,15-60 minutes,User delegation SAS when supported
+Internal Azure app reads claims,Read,Claims container,Ongoing,Managed identity + RBAC instead of SAS

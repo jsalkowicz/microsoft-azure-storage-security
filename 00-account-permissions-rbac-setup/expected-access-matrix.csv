@@ -1,0 +1,3 @@
+Identity,Scope,Role,Claims Expected,Human Resources Expected,Purpose
+Lab-builder identity,Subscription,Owner,Allowed,Allowed,Build the lab and manage role assignments
+Northstar Claims Reader,claims container,Storage Blob Data Reader,Allowed,Denied,Validate least-privilege data access

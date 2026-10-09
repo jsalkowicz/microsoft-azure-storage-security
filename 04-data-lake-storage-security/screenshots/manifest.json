@@ -1,0 +1,17 @@
+{
+  "screenshots": [
+    "01-data-lake-directories.png",
+    "02-root-acl.png",
+    "03-claims-directory-acl.png",
+    "04-hr-directory-acl.png",
+    "05-shared-directory-acl.png",
+    "06-claims-user-claims-allowed.png",
+    "07-claims-user-hr-denied.png",
+    "08-claims-user-shared-allowed.png",
+    "09-hr-user-claims-denied.png",
+    "10-hr-user-hr-allowed.png",
+    "11-hr-user-shared-allowed.png",
+    "12-final-security-overview.png"
+  ],
+  "redactions": "Browser URLs, personal account information, subscription/object/request identifiers, and tenant-specific details were cropped or redacted."
+}

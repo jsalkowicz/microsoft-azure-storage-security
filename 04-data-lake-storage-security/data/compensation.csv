@@ -1,0 +1,7 @@
+employee_id,job_level,base_salary_usd,bonus_target_pct
+EMP-001,L2,72000,5
+EMP-002,L2,68500,5
+EMP-003,L3,88000,8
+EMP-004,L4,112000,10
+EMP-005,L2,65000,5
+EMP-006,L2,70500,5

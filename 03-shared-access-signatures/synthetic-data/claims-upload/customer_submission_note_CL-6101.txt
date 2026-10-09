@@ -1,0 +1,6 @@
+NORTHSTAR INSURANCE — FICTIONAL TRAINING RECORD
+Claim reference: CL-6101
+Submission channel: Temporary customer upload link (exercise only)
+Required operation: Create a single specified blob and send its content.
+Unnecessary operations: Read other claims, list a container, delete or overwrite other records.
+No SAS token or real customer information belongs in this file.

@@ -1,0 +1,9 @@
+NORTHSTAR INSURANCE — FICTIONAL TRAINING RECORD
+Document: Separate claim estimate — negative-access test
+Claim reference: CL-6202
+Customer: Jordan Reyes (fictional)
+Loss type: Windshield chip
+Incident date: 2026-09-10
+Estimate: $420.00 (invented)
+Partner-access note: This is a DIFFERENT claim and must not be accessible through the SAS for CL-6201.
+Data classification: SYNTHETIC / TRAINING ONLY

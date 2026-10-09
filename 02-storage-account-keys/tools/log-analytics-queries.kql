@@ -1,0 +1,7 @@
+// Lab 02: account-key authenticated Blob operations.
+// Change the time window to match when you ran the lab.
+StorageBlobLogs
+| where TimeGenerated > ago(7d)
+| where AuthenticationType == "AccountKey"
+| project TimeGenerated, OperationName, AuthenticationType, StatusCode, StatusText, Uri
+| order by TimeGenerated desc

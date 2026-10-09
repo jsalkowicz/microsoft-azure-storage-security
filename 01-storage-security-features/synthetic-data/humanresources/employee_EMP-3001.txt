@@ -1,0 +1,8 @@
+NORTHSTAR INSURANCE GROUP
+SYNTHETIC TRAINING DATA — NOT REAL EMPLOYEE DATA
+
+Employee ID: EMP-3001
+Employee: Taylor Brooks
+Synthetic SSN: 000-98-7654
+Department: Finance
+Salary: $94,000

@@ -1,0 +1,9 @@
+claim_id,claim_type,status,region,amount_usd,opened_date
+CLM-1001,Auto,Open,Northeast,4250.00,2026-01-12
+CLM-1002,Property,Closed,Midwest,11875.00,2026-02-03
+CLM-1003,Auto,Under Review,Southeast,2630.00,2026-03-17
+CLM-1004,Liability,Open,West,7650.00,2026-04-21
+CLM-1005,Property,Closed,Northeast,9325.00,2026-05-09
+CLM-1006,Auto,Open,Midwest,5180.00,2026-06-15
+CLM-1007,Property,Under Review,Southeast,14200.00,2026-07-11
+CLM-1008,Liability,Closed,West,3890.00,2026-08-05

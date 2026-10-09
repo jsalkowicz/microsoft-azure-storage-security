@@ -1,0 +1,10 @@
+NORTHSTAR INSURANCE — FICTIONAL TRAINING RECORD
+Document: Repair-partner claim summary
+Claim reference: CL-6201
+Customer: Taylor Morgan (fictional)
+Loss type: Minor vehicle damage
+Incident date: 2026-09-12
+Vehicle: 2019 compact sedan (invented)
+Damage summary: Rear bumper scuff and cracked trim after a low-speed parking incident.
+Partner-approved scope: View this claim summary to prepare an estimate. No customer contact details or financial account data included.
+Data classification: SYNTHETIC / TRAINING ONLY

@@ -1,0 +1,4 @@
+Timestamp,Identity,Operation,Resource,Authentication,Result
+2026-09-16T09:00:02Z,ClaimsReader,BlobRead,claims/claim_CL-2001.txt,Entra ID,Success
+2026-09-16T09:02:11Z,ClaimsReader,BlobRead,humanresources/employee_EMP-3001.txt,Entra ID,AuthorizationFailure
+2026-09-16T09:05:44Z,WebApp-MI,BlobRead,web-assets/banner.txt,Managed Identity,Success

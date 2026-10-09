@@ -1,0 +1,12 @@
+NORTHSTAR INSURANCE GROUP
+SYNTHETIC TRAINING DATA — NOT REAL CUSTOMER DATA
+
+Claim Number: CL-4101
+Customer: Jordan Blake
+Synthetic SSN: 000-41-4101
+Claim Type: Property
+Claim Amount: $12,740
+Status: Open
+
+Purpose:
+Synthetic Blob data used only for Azure Storage account-key security training.

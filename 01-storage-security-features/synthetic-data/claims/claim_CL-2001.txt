@@ -1,0 +1,8 @@
+NORTHSTAR INSURANCE GROUP
+SYNTHETIC TRAINING DATA — NOT REAL CUSTOMER DATA
+
+Claim Number: CL-2001
+Customer: Avery Cole
+Synthetic SSN: 000-12-3456
+Claim Amount: $12,450
+Status: Open
